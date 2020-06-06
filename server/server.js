@@ -56,28 +56,65 @@ let request = require('request-promise');
 
 // Advanced
 
-let dataPath = path.join(__dirname, '../popular-downloader.js');
+let dataPath = path.join(__dirname, '../popular-downloader.json');
+let m = path.join(__dirname, '../downloads/media.js');
 
-request('https://reddit.com/r/popular.json', (err, res, body) => {
-    if (err) console.log(err);
+request('https://reddit.com/r/popular.json')
+    .then((dataPath) => {
 
-    JSON.parse(body).data.children.forEach(item => {
-        fs.writeFile(dataPath, res.body, err => {
-            if (err) console.log(err);
+        const stuff = JSON.parse(dataPath);
+        //const scrapedData = stuff.data.children.map((item) => {
+
+        stuff.data.children.forEach((item) => {
+            const fileExt = path.extname(item.data.url);
+            //console.log(fileExt);
+
+
+            if (fileExt == '.png' || fileExt == '.jpg' || fileExt == '.gif') {
+                console.log(item.data.id);
+                console.log(fileExt);
+
+                request(item.data.url, { encoding: 'base64' })
+                    .then((image) => {
+                        fs.writeFile(
+                            path.join(m, `${item.data.id}${fileExt}`),
+                            image,
+                            { encoding: 'base64' },
+                            (err) => {
+                                if (err) console.log(err);
+                            }
+                        );
+
+                    });
+            }
+
         });
     })
 
-    // let mediaPath = path.join(__dirname, '../downloads');
-
-    // let media = fs.readFileSync('popular-downloader.js');
-    // JSON.parse(media).data.children.forEach(m => {
-    //     fs.writeFile(mediaPath, path.extname('.png'), err => {
-    //         if (err) console.log(err);
-    //     })
-    // })
+    .catch((e) => console.log(e));
 
 
+//Messing around with an idea
+        // JSON.parse(body).data.children.forEach(item => {
+        //     // fs.writeFile(dataPath, res.body, err => {
+        //     //     if (err) console.log(err);
+        //     // });
+
+        //     console.log(path.extname(item.data.url));
+        // })
+
+        // let mediaPath = path.join(__dirname, '../downloads');
+
+        // let media = fs.readFileSync('popular-downloader.js');
+        // JSON.parse(media).data.children.forEach(m => {
+        //     fs.writeFile(mediaPath, path.extname('.png'), err => {
+        //         if (err) console.log(err);
+        //     })
+        // })
 
 
-});
+
+
+
+
 
