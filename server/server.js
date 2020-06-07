@@ -1,6 +1,7 @@
 let path = require('path');
 let fs = require('fs');
-let request = require('request-promise');
+let request= require('request');
+let rp = require('request-promise');
 
 // Part 1
 
@@ -57,9 +58,9 @@ let request = require('request-promise');
 // Advanced
 
 let dataPath = path.join(__dirname, '../popular-downloader.json');
-let m = path.join(__dirname, '../downloads/media.js');
+//let m = path.join(__dirname, '../downloads/media.js');
 
-request('https://reddit.com/r/popular.json')
+rp('https://reddit.com/r/popular.json')
     .then((dataPath) => {
 
         const stuff = JSON.parse(dataPath);
@@ -74,10 +75,10 @@ request('https://reddit.com/r/popular.json')
                 console.log(item.data.id);
                 console.log(fileExt);
 
-                request(item.data.url, { encoding: 'base64' })
+                rp(item.data.url, { encoding: 'base64' })
                     .then((image) => {
                         fs.writeFile(
-                            path.join(m, `${item.data.id}${fileExt}`),
+                            path.join(__dirname, `../downloads/media.js ${item.data.id}${fileExt}`),
                             image,
                             { encoding: 'base64' },
                             (err) => {
