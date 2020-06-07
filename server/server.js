@@ -1,6 +1,6 @@
 let path = require('path');
 let fs = require('fs');
-let request= require('request');
+let request = require('request');
 let rp = require('request-promise');
 
 // Part 1
